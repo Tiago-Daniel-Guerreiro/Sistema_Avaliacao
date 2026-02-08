@@ -138,13 +138,14 @@ def visualizar_exame(exame_id):
             fim_previsto = "-"
         
         # Bloquear início antecipado
+        guard_html = build_exame_guard()
         if not submissao_exame and dt_inicio_exame and datetime.now() < dt_inicio_exame:
             data_fim_prevista = dt_inicio_exame + timedelta(minutes=duracao_min)
             fim_previsto = data_fim_prevista.strftime('%d/%m/%Y %H:%M')
             tempo_restante_text = 'Aguardando início'
             header = build_exame_header(exame, duracao_min, fim_previsto, tempo_restante_text)
             aviso = '<div class="alert alert-info">O exame ainda não foi iniciado. Aguarde o horário de início.</div>'
-            content = header + Markup(aviso)
+            content = header + guard_html + Markup(aviso)
             return render_base_with_content(content, 200)
 
         header = build_exame_header(exame, duracao_min, fim_previsto, tempo_restante_text)
@@ -152,7 +153,7 @@ def visualizar_exame(exame_id):
         # Se não iniciou ainda, mostrar botão de início
         if not submissao_exame:
             inicio_html = build_inicio_exame(exame_id)
-            content = header + inicio_html
+            content = header + guard_html + inicio_html
             return render_base_with_content(content, 200)
         
         # Construir tabela de questões
@@ -163,7 +164,6 @@ def visualizar_exame(exame_id):
             for sub in submissoes:
                 respostas_existentes[sub['questao_id']] = sub.get('resposta', '')
 
-        guard_html = build_exame_guard()
         tabela_html = build_tabela_questoes(exame_id, questoes, respostas_existentes)
         footer = build_footer_finalizar(exame_id)
 

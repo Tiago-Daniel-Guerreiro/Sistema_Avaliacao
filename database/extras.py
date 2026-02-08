@@ -8,7 +8,7 @@ from .aluno import add_aluno
 from .exame import add_exame
 from .questao import add_questao
 from .resposta import add_resposta
-from .tipos_questao import add_tipo_questao_or_get, get_tipo_questao_by_nome
+from .tipos_questao import add_tipo_questao_or_get, get_tipo_questao_by_nome, update_tipo_questao
 
 
 def adicionar_dados_extras():
@@ -27,15 +27,25 @@ def adicionar_dados_extras():
         ('choices', 'Opções (única resposta)', True, True, False),
         ('choices', 'Opções (múltiplas respostas)', True, True, True),
         ('select', 'Selecionado (única)', True, True, False),
-        ('true_false', 'Verdadeiro ou Falso', True, True, False),
-        ('true_false_justificado', 'Verdadeiro ou Falso justificado', True, False, False),
+        ('true_false', 'Verdadeiro ou Falso', False, True, False),
+        ('true_false_justificado', 'Verdadeiro ou Falso justificado', False, False, False),
     ]
     
     tipos_map = {}  # Mapear nome para tipo_questao
     for input_file, nome, list_options, correcao_automatica, multiplas_respostas in tipos_extras:
         resultado = add_tipo_questao_or_get(input_file, nome, list_options, correcao_automatica, multiplas_respostas)
         if resultado['ok']:
-            tipos_map[input_file] = resultado['tipo_questao']  # Usar input_file como chave
+            tipo_atual = resultado['tipo_questao']
+            tipos_map[input_file] = tipo_atual  # Usar input_file como chave
+            if tipo_atual:
+                update_tipo_questao(
+                    tipo_atual['id'],
+                    input_file,
+                    nome,
+                    list_options=list_options,
+                    correcao_automatica=correcao_automatica,
+                    multiplas_respostas=multiplas_respostas
+                )
             print(f"  [OK] Tipo '{nome}' (input_file='{input_file}') adicionado/obtido")
     
     # 2. Usar roles existentes (admin, professor, aluno)
@@ -141,10 +151,10 @@ def adicionar_dados_extras():
             },
             {
                 'tipo_input_file': 'number',
-                'texto': 'Qual a sua idade? (com validacao)',
+                'texto': 'Indique o primeiro ano do século XXI que termina com 83:',
                 'pontuacao': 1.0,
                 'opcoes': [],
-                'opcao_correta': None,
+                'opcao_correta': 2083,
                 'nome_especifico': 'Número (com validação)'
             },
             {

@@ -7,9 +7,33 @@ def _determinar_campo_tipo(tipo_info, permitir_edit=False):
     if not tipo_info:
         return 'texto'
 
-    tipo_nome = tipo_info.get('nome', '').lower()
+    input_file = (tipo_info.get('input_file') or '').strip().lower()
+    if input_file:
+        return input_file
 
-    return tipo_nome
+    tipo_nome = tipo_info.get('nome', '').strip().lower()
+    nome_map = {
+        'texto': 'text',
+        'email': 'email',
+        'número': 'number',
+        'numero': 'number',
+        'número (com validação)': 'number',
+        'senha': 'password',
+        'área de texto': 'textarea',
+        'area de texto': 'textarea',
+        'dia e hora': 'datetime',
+        'hora': 'time',
+        'escondido': 'hidden',
+        'opções (única resposta)': 'choices',
+        'opcoes (unica resposta)': 'choices',
+        'opções (múltiplas respostas)': 'choices',
+        'opcoes (multiplas respostas)': 'choices',
+        'selecionado (única)': 'select',
+        'selecionado (unica)': 'select',
+        'verdadeiro ou falso': 'true_false',
+        'verdadeiro ou falso justificado': 'true_false_justificado'
+    }
+    return nome_map.get(tipo_nome, tipo_nome)
 
 def render_page_resposta(tabela_html):
     return render_template('base.html', content=tabela_html)
@@ -25,10 +49,17 @@ def build_table_resposta(respostas):
         tipo_nome = resposta.get('tipo_nome', '')
         opcao_correta = resposta.get('opcao_correta', '-')
 
-        botoes = [
-            TableBuilder.botao_editar(f'/resposta/{resposta["id"]}/modal/edicao'),
-            TableBuilder.botao_remover(f'/resposta/{resposta["id"]}/modal/delete')
-        ]
+        tipo_info = resposta.get('tipo_info') or {}
+        botoes = []
+        if (
+            tipo_info.get('list_options') in [1, True]
+            or tipo_info.get('correcao_automatica') in [1, True]
+            or tipo_info.get('multiplas_respostas') in [1, True]
+        ):
+            botoes = [
+                TableBuilder.botao_editar(f'/resposta/{resposta["id"]}/modal/edicao'),
+                TableBuilder.botao_remover(f'/resposta/{resposta["id"]}/modal/delete')
+            ]
 
         tabela.add_linha(
             questao_texto,
@@ -60,7 +91,20 @@ def build_modal_edicao_resposta(resposta, questao, tipo_info):
     attrs['initial_value'] = opcoes
 
     if tipo_info.get('list_options', False):
-        if tipo_info.get('correcao_automatica', False):
+        if tipo_info.get('multiplas_respostas', False):
+            # Permitir múltiplas corretas
+            opcoes_corretas = []
+            try:
+                if isinstance(opcao_correta_value, str):
+                    import json as _json
+                    opcoes_corretas = _json.loads(opcao_correta_value)
+                elif isinstance(opcao_correta_value, list):
+                    opcoes_corretas = opcao_correta_value
+            except Exception:
+                opcoes_corretas = []
+            form.add_input_list('opcoes', 'Opções', value=opcoes,
+                                mode='multiple', opcoes_corretas=opcoes_corretas, **attrs)
+        elif tipo_info.get('correcao_automatica', False):
             form.add_input_list('opcoes', 'Opções', value=opcoes,
                                 mode='single', opcao_correta=opcao_correta_value, **attrs)
         else:

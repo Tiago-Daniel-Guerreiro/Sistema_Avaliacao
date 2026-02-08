@@ -14,9 +14,16 @@ def get_respostas():
         LEFT JOIN tipos_questao t ON q.tipo_questao_id = t.id
     '''
     resultados = _executar_select(query)
+    from database.tipos_questao import get_tipo_questao_by_id
     for resultado in resultados:
         if resultado.get('opcoes'):
             resultado['opcoes'] = json.loads(resultado['opcoes'])
+        # Adiciona tipo_info para uso na UI
+        tipo_id = resultado.get('tipo_id')
+        if tipo_id:
+            resultado['tipo_info'] = get_tipo_questao_by_id(tipo_id)
+        else:
+            resultado['tipo_info'] = {}
     return resultados
 
 def get_resposta_by_id(resposta_id):
@@ -55,6 +62,24 @@ def get_respostas_by_questao(questao_id):
     return resultados
 
 def add_resposta(questao_id, opcoes, opcao_correta=None):
+    from database.questao import get_questao_by_id
+    from database.tipos_questao import get_tipo_questao_by_id
+
+    questao = get_questao_by_id(questao_id)
+    if not questao:
+        return {'ok': False, 'resposta': None, 'erro': 'Questão não encontrada'}
+    tipo_id = questao.get('tipo_questao_id')
+    tipo = get_tipo_questao_by_id(tipo_id) if tipo_id else None
+    if not tipo:
+        return {'ok': False, 'resposta': None, 'erro': 'Tipo de questão não encontrado'}
+    # Só permite criar resposta se for tipo válido (qualquer um dos três)
+    if not (
+        tipo.get('list_options')
+        or tipo.get('correcao_automatica')
+        or tipo.get('multiplas_respostas')
+    ):
+        return {'ok': False, 'resposta': None, 'erro': 'Tipo de questão não permite resposta'}
+
     opcoes_json = json.dumps(opcoes) if not isinstance(opcoes, str) else opcoes
     query = '''
         INSERT INTO respostas (questao_id, opcoes, opcao_correta) 

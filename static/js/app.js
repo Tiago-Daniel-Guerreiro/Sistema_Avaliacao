@@ -203,18 +203,26 @@ function fecharModal() {
         modaisContainer.classList.remove('active');
         modaisContainer.innerHTML = '';
     }
-    document.body.classList.remove('modal-open');
     document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+    // Garante que o scroll sempre volta
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
 }
 
 function mostrarModalSeExistir() {
     const modaisContainer = document.getElementById('modais-container');
     if (!modaisContainer) return;
+    const modalEl = modaisContainer.querySelector('.modal');
+    if (!modalEl) {
+        modaisContainer.classList.remove('active');
+        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+        // Garante que o scroll sempre volta
+        document.body.classList.remove('modal-open');
+        return;
+    }
 
     modaisContainer.classList.add('active');
-
-    const modalEl = modaisContainer.querySelector('.modal');
-    if (!modalEl) return;
 
     if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
         const instance = bootstrap.Modal.getOrCreateInstance(modalEl);
@@ -271,6 +279,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const observer = new MutationObserver(() => {
         if (modaisContainer.innerHTML.trim() !== '') {
             mostrarModalSeExistir();
+        } else {
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
         }
     });
 

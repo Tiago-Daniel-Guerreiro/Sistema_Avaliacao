@@ -29,6 +29,7 @@ def build_modal_add_aluno(turmas, contas):
     conta_opts = [(c['id'], f"{c['nome']} - {c['email']}") for c in contas if c]
 
     form = (FormBuilder.criar('/alunos/', '#tabela-alunos tbody')
+        .add_text('identificador', 'Identificador do Aluno', required=True, placeholder='Ex: 12345')
         .add_select('conta_id', 'Conta (Nome - Email)', options=conta_opts, required=True)
         .add_select('turma_id', 'Turma', options=turma_opts, required=False)
     )
@@ -44,10 +45,11 @@ def build_modal_add_aluno(turmas, contas):
     return modal.build()
 
 def build_modal_edit_aluno(aluno, turmas, contas):
-    turma_opts = [(t['id'], t.get('turma_display', f"{t['ano']}º {t['identificador']}")) for t in turmas]
     conta_opts = [(c['id'], f"{c['nome']} - {c['email']}") for c in contas if c]
+    turma_opts = [(t['id'], t.get('turma_display', f"{t['ano']}º {t['identificador']}")) for t in turmas]
 
     form = (FormBuilder.editar('/alunos/', aluno['id'], f"#aluno-{aluno['id']}")
+        .add_text('identificador', 'Identificador do Aluno', value=aluno.get('identificador', ''), required=True)
         .add_select('conta_id', 'Conta (Nome - Email)', value=aluno.get('id_conta', ''), options=conta_opts, required=True)
         .add_select('turma_id', 'Turma', value=aluno.get('turma_id', ''), options=turma_opts, required=False)
     )
@@ -80,15 +82,16 @@ def build_modal_delete_aluno(aluno):
     return modal.build()
 
 def render_linha_aluno(aluno, turma_display=None):
-    turma_display = turma_display or aluno.get('turma_display', '') or aluno.get('turma', '') or '-'
+    turma_nome = turma_display or aluno.get('turma_display') or aluno.get('turma_nome') or aluno.get('turma') or aluno.get('ano') or '-'
     return render_template(
         'componentes/tabela_linha.html',
         linha={
             'id': f"aluno-{aluno['id']}",
             'colunas': [
                 aluno.get('identificador', ''),
+                aluno.get('conta_nome', aluno.get('nome', '')),
                 aluno.get('email', aluno.get('conta_email', '')),
-                turma_display
+                turma_nome
             ],
             'botoes': TableBuilder.botoes_crud('/alunos', aluno['id'])
         },

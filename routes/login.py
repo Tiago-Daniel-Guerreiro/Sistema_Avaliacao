@@ -49,44 +49,53 @@ def api_login():
             
             return jsonify(response), 200
                 
-        # Se falhou, verificar se é código de acesso temporário
+        # Se falhou, verificar se é código de acesso único de recovery_codes.json
         data_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'data')
-        temp_codes_file = os.path.join(data_dir, 'temp_access_codes.json')
-                
-        if os.path.exists(temp_codes_file):
-            try:
-                with open(temp_codes_file, 'r', encoding='utf-8') as f:
-                    temp_codes = json.load(f)
+        recovery_codes_file = os.path.join(data_dir, 'recovery_codes.json')
 
-                # Verificar se existe código para este email
-                if email in temp_codes:
-                    code_data = temp_codes[email]
-                    
-                    # Verificar se o código corresponde e não foi usado
+        if os.path.exists(recovery_codes_file):
+            try:
+                with open(recovery_codes_file, 'r', encoding='utf-8') as f:
+                    content = f.read().strip()
+                    recovery_codes = json.loads(content) if content else {'codes': {}}
+                codes = recovery_codes.get('codes', {})
+                if email in codes:
+                    code_data = codes[email]
+                    # Verifica se o código bate e se está expirado
                     if code_data['code'] == senha:
-                        if code_data.get('used', False):
-                            return jsonify({'ok': False, 'erro': 'Código já utilizado'}), 401
-                                                
-                        # Marcar código como usado
-                        temp_codes[email]['used'] = True
-                        with open(temp_codes_file, 'w', encoding='utf-8') as f:
-                            json.dump(temp_codes, f, indent=2, ensure_ascii=False)
-                        
-                        # Retornar acesso temporário
+                        expires_at = code_data.get('expires_at')
+                        from datetime import datetime
+                        if expires_at and datetime.utcnow() > datetime.fromisoformat(expires_at):
+                            return jsonify({'ok': False, 'erro': 'Código expirado'}), 401
+                        # Se for one_time, remove após uso
+                        if code_data.get('one_time'):
+                            del codes[email]
+                            with open(recovery_codes_file, 'w', encoding='utf-8') as f:
+                                json.dump({'codes': codes}, f, indent=4)
+                        # Preencher sessão Flask para acesso admin temporário
+                        session['user_id'] = 0
+                        session['email'] = email
+                        session['senha'] = senha
+                        session['cargo'] = 'admin'
+                        session['role'] = 1
+                        session['logged_in'] = True
                         return jsonify({
                             'ok': True,
-                            'role': code_data['cargo_id'],
+                            'user': email,
+                            'userId': 0,
+                            'role': 1,
                             'conta': {
                                 'id': 0,
                                 'email': email,
-                                'nome': 'Acesso Temporário',
-                                'id_cargo': code_data['cargo_id'],
+                                'nome': 'Acesso Único',
+                                'id_cargo': 1,
                                 'temp_access': True
                             }
                         }), 200
-            except Exception as e:
+            except json.JSONDecodeError:
                 traceback.print_exc()
-        
+            except Exception:
+                traceback.print_exc()
         return jsonify({'ok': False, 'erro': 'Credenciais inválidas'}), 401
     except Exception as e:
         traceback.print_exc()

@@ -116,13 +116,25 @@ def inicializar_database(test=False, extras=False):
         print(f"Aviso durante migração: {e}")
 
     # Tipos de questão são inicializados em extras.py quando extras=True
-    # Deixar INSERT OR IGNORE apenas como fallback se alguma vez não for usada extras
+    # Fallback com nomes amigáveis quando extras não é usado
     if not extras:
         cursor.execute("""INSERT OR IGNORE INTO tipos_questao (input_file, nome, list_options, correcao_automatica) VALUES 
-            ('text', 'text', 0, 0), 
-            ('choices', 'choices', 1, 1), 
-            ('true_false', 'true_false', 0, 1), 
-            ('true_false_justificado', 'true_false_justificado', 0, 0)
+            ('text', 'Texto', 0, 0), 
+            ('choices', 'Opções (única resposta)', 1, 1), 
+            ('true_false', 'Verdadeiro ou Falso', 0, 1), 
+            ('true_false_justificado', 'Verdadeiro ou Falso justificado', 0, 0)
+        """)
+        # Ajustar nomes antigos iguais ao input_file
+        cursor.execute("""
+            UPDATE tipos_questao
+            SET nome = CASE input_file
+                WHEN 'text' THEN 'Texto'
+                WHEN 'choices' THEN 'Opções (única resposta)'
+                WHEN 'true_false' THEN 'Verdadeiro ou Falso'
+                WHEN 'true_false_justificado' THEN 'Verdadeiro ou Falso justificado'
+                ELSE nome
+            END
+            WHERE nome = input_file
         """)
 
     cursor.execute('''
@@ -280,7 +292,8 @@ def inicializar_database(test=False, extras=False):
     conn.commit()
     conn.close()
 
-def _validar_integridade_respostas(cursor):    
+
+def _validar_integridade_respostas(cursor):
     # Criar respostas vazias para questões que deveriam ter mas não têm
     cursor.execute('''
         INSERT INTO respostas (questao_id, opcoes, opcao_correta)
@@ -290,7 +303,6 @@ def _validar_integridade_respostas(cursor):
         WHERE (t.list_options = 1 OR t.correcao_automatica = 1)
         AND NOT EXISTS (SELECT 1 FROM respostas WHERE questao_id = q.id)
     ''')
-    
     # Eliminar respostas de questões que não deveriam ter respostas
     cursor.execute('''
         DELETE FROM respostas
@@ -301,6 +313,14 @@ def _validar_integridade_respostas(cursor):
             WHERE t.list_options = 0 AND t.correcao_automatica = 0
         )
     ''')
+
+# Função pública para limpeza de respostas inválidas
+def limpar_respostas_invalidas():
+    conn = _get_connection()
+    cursor = conn.cursor()
+    _validar_integridade_respostas(cursor)
+    conn.commit()
+    conn.close()
 
 def _limpar_resposta_incompativel(questao_id):
     conn = _get_connection()

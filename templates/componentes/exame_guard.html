@@ -1,6 +1,38 @@
+<style>
+    #exame-guard-overlay {
+        position: fixed;
+        inset: 0;
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.85);
+        color: #fff;
+        z-index: 9999;
+        text-align: center;
+        padding: 24px;
+    }
+    #exame-guard-overlay.hidden { display: none; }
+</style>
+
+<div id="exame-guard-overlay">
+    <div>
+        <h4>Iniciar Exame</h4>
+        <p>Para continuar, clique no botão abaixo para entrar em tela cheia.</p>
+        <button id="exame-guard-start" class="btn btn-primary">Entrar em tela cheia</button>
+        <div id="exame-guard-warning" class="mt-3" style="display:none;">
+            Não foi possível ativar tela cheia. Tente novamente.
+        </div>
+    </div>
+</div>
+
 <script>
 (() => {
-    let sessionActive = false;
+    let sessionActive = true;
+    const overlay = document.getElementById('exame-guard-overlay');
+    const startBtn = document.getElementById('exame-guard-start');
+    const warning = document.getElementById('exame-guard-warning');
 
     const startSession = async () => {
         sessionActive = true;
@@ -8,19 +40,32 @@
             if (!document.fullscreenElement) {
                 await document.documentElement.requestFullscreen();
             }
+            overlay.classList.add('hidden');
         } catch (err) {
-            // Se o navegador bloquear fullscreen, ainda manter a sessão ativa
+            warning.style.display = 'block';
         }
     };
 
     const triggerViolation = () => {
         if (!sessionActive) return;
-        window.location.reload();
+        if (window.history.length > 1) {
+            window.history.back();
+        } else {
+            window.location.href = '/';
+        }
     };
 
-    document.addEventListener('DOMContentLoaded', () => {
-        startSession();
-    });
+    const devtoolsOpen = () => {
+        const w = window.outerWidth - window.innerWidth;
+        const h = window.outerHeight - window.innerHeight;
+        return w > 160 || h > 160;
+    };
+
+    const checkDevtools = () => {
+        if (devtoolsOpen()) triggerViolation();
+    };
+
+    startBtn.addEventListener('click', () => startSession());
 
     document.addEventListener('fullscreenchange', () => {
         if (!document.fullscreenElement && sessionActive) {
@@ -47,5 +92,8 @@
             e.preventDefault();
         }
     });
+
+    window.addEventListener('resize', checkDevtools);
+    setInterval(checkDevtools, 1000);
 })();
 </script>

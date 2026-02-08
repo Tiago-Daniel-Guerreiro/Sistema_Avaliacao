@@ -62,7 +62,7 @@ td:last-child {
     left: 0;
     right: 0;
     bottom: 0;
-    z-index: 1050;
+    z-index: 1055;
     display: none;
     align-items: center;
     justify-content: center;
@@ -86,7 +86,7 @@ td:last-child {
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
     display: flex;
     flex-direction: column;
-    z-index: 1051;
+    z-index: 1056;
     overflow: hidden;
 }
 
@@ -201,4 +201,8 @@ td:last-child {
     background: none;
     border: none;
     font-size: 1.5rem;
+}
+
+.modal-backdrop {
+    z-index: 1040;
 }

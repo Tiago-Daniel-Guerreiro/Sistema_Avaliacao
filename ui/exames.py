@@ -37,7 +37,8 @@ def build_exame_view_content(exame, questoes, data_fim_fmt, submissoes_rows=None
             TableBuilder.botao("Editar", f'/questoes/{q["id"]}/modal/edit', 'btn btn-sm btn-primary'),
             TableBuilder.botao("Deletar", f'/questoes/{q["id"]}/modal/delete', 'btn btn-sm btn-danger')
         ]
-        if resposta_id:
+        tipo_info = q.get('tipo_info')
+        if resposta_id and tipo_info and ((tipo_info.get('list_options') in [1, True]) or (tipo_info.get('correcao_automatica') in [1, True])):
             botoes.append(TableBuilder.botao("Editar Respostas", f'/resposta/{resposta_id}/modal/edicao', 'btn btn-sm btn-outline-primary'))
 
         tabela.add_linha(
@@ -66,7 +67,8 @@ def build_exame_questao_row(questao):
         TableBuilder.botao("Editar", f'/questoes/{questao["id"]}/modal/edit', 'btn btn-sm btn-primary'),
         TableBuilder.botao("Deletar", f'/questoes/{questao["id"]}/modal/delete', 'btn btn-sm btn-danger')
     ]
-    if resposta_id:
+    tipo_info = questao.get('tipo_info')
+    if resposta_id and tipo_info and ((tipo_info.get('list_options') in [1, True]) or (tipo_info.get('correcao_automatica') in [1, True])):
         botoes.append(TableBuilder.botao("Editar Respostas", f'/resposta/{resposta_id}/modal/edicao', 'btn btn-sm btn-outline-primary'))
 
     return render_template(
@@ -246,7 +248,8 @@ def build_exame_questoes_lista(exame_id, questoes):
             TableBuilder.botao("Editar", f'/questoes/{q["id"]}/modal/edit', 'btn btn-sm btn-primary'),
             TableBuilder.botao("Deletar", f'/questoes/{q["id"]}/modal/delete', 'btn btn-sm btn-danger')
         ]
-        if resposta_id:
+        tipo_info = q.get('tipo_info')
+        if resposta_id and tipo_info and ((tipo_info.get('list_options') in [1, True]) or (tipo_info.get('correcao_automatica') in [1, True])):
             botoes.append(TableBuilder.botao("Editar Respostas", f'/resposta/{resposta_id}/modal/edicao', 'btn btn-sm btn-outline-primary'))
 
         tabela.add_linha(
@@ -274,7 +277,8 @@ def build_exame_questoes_professor(exame_id, questoes):
             TableBuilder.botao("Editar", f'/questoes/{q["id"]}/modal/edit', 'btn btn-sm btn-primary'),
             TableBuilder.botao("Deletar", f'/questoes/{q["id"]}/modal/delete', 'btn btn-sm btn-danger')
         ]
-        if resposta_id:
+        tipo_info = q.get('tipo_info')
+        if resposta_id and tipo_info and ((tipo_info.get('list_options') in [1, True]) or (tipo_info.get('correcao_automatica') in [1, True])):
             botoes.append(TableBuilder.botao("Editar Respostas", f'/resposta/{resposta_id}/modal/edicao', 'btn btn-sm btn-outline-primary'))
 
         tabela.add_linha(

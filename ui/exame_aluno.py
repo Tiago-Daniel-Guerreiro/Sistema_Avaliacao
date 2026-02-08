@@ -52,15 +52,29 @@ def build_modal_questao_html(exame_id, questao, resposta_atual, opcoes, input_fi
         texto=texto
     )))
 
+    opcoes_normalizadas = opcoes
+    if isinstance(opcoes, str):
+        try:
+            import json
+            opcoes_normalizadas = json.loads(opcoes) if opcoes else []
+        except Exception:
+            opcoes_normalizadas = [o.strip() for o in opcoes.split('\n') if o.strip()]
+
+    campo_attrs = {
+        'disabled': read_only,
+        'multiplas_respostas': multiplas_respostas
+    }
+    if input_file == 'choices':
+        campo_attrs['type'] = 'checkbox' if multiplas_respostas else 'radio'
+
     form.add_campo(
         input_file,
         'resposta',
         'Resposta',
         value=resposta_atual,
         required=True,
-        options=opcoes,
-        disabled=read_only,
-        multiplas_respostas=multiplas_respostas
+        options=opcoes_normalizadas,
+        **campo_attrs
     )
 
     modal = (ModalBuilder(modal_id=f'modal-questao-{questao_id}', show_close_button=False)

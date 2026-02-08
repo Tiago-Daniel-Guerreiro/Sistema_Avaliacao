@@ -22,6 +22,17 @@ from ui.disciplina_turma import (
 
 disciplina_turma_route = Blueprint('disciplina_turma', __name__, url_prefix='/disciplina-turma')
 
+
+@disciplina_turma_route.route('/modal/add')
+def modal_add():
+    try:
+        turmas = get_turmas()
+        disciplinas = get_disciplinas()
+        professores = get_contas_by_cargo('professor')
+        return build_modal_add_disciplina_turma(turmas, disciplinas, professores)
+    except Exception as e:
+        return erro_500(e)
+
 @disciplina_turma_route.route('/')
 def page_disciplina_turma():
     return render_page_disciplina_turma(table_disciplina_turma())
@@ -78,8 +89,21 @@ def modal_add():
         turmas = get_turmas()
         disciplinas = get_disciplinas()
         professores = get_contas_by_cargo('professor')
-        
-        return build_modal_add_disciplina_turma(turmas, disciplinas, professores)
+
+        # Buscar apenas contas de alunos sem turma
+        from database.contas import get_contas_by_cargo
+        from database.aluno import get_alunos
+        alunos = get_alunos()
+        contas_alunos_sem_turma = [
+            {
+                'id': a['id_conta'],
+                'nome': a['nome'],
+                'email': a['email']
+            }
+            for a in alunos if a['id_conta'] and (a['turma_id'] is None)
+        ]
+
+        return build_modal_add_disciplina_turma(turmas, disciplinas, professores, contas_alunos_sem_turma)
         
     except Exception as e:
         return erro_500(e)

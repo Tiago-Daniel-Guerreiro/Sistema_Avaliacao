@@ -31,7 +31,10 @@ def table_questoes():
             return obter_div_acesso_negado()
         
         questoes = get_questoes()
-        
+        tipos = {t['id']: t for t in get_tipos_questao()}
+        for q in questoes:
+            tipo_id = q.get('tipo_questao_id') or q.get('tipo_id')
+            q['tipo_info'] = tipos.get(tipo_id) if tipo_id else None
         return build_table_questoes(questoes)
         
     except Exception as e:
@@ -72,6 +75,9 @@ def modal_edit_questao(questao_id):
         exames = get_exames()
         tipos = get_tipos_questao()
         
+        tipo_id = questao.get('tipo_questao_id') or questao.get('tipo_id')
+        tipo_info = get_tipo_questao_by_id(tipo_id) if tipo_id else None
+        questao['tipo_info'] = tipo_info
         return build_modal_edit_questao(questao, exames, tipos)
         
     except Exception as e:

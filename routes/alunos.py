@@ -37,8 +37,9 @@ def table_alunos():
 def modal_add_aluno():
     try:
         turmas = get_turmas()
-        contas = get_contas()
-        return build_modal_add_aluno(turmas, contas)
+        from database.aluno import get_contas_aluno_sem_turma
+        contas_disponiveis = get_contas_aluno_sem_turma()
+        return build_modal_add_aluno(turmas, contas_disponiveis)
         
     except Exception as e:
         return erro_500(e)
@@ -52,8 +53,13 @@ def modal_edit_aluno(aluno_id):
             return erro_html('Aluno não encontrado', 200)
         
         turmas = get_turmas()
+        from database.aluno import get_contas_aluno_sem_turma
+        contas_disponiveis = get_contas_aluno_sem_turma()
         contas = get_contas()
-        return build_modal_edit_aluno(aluno, turmas, contas)
+        conta_atual = next((c for c in contas if c['id'] == aluno.get('id_conta')), None)
+        if conta_atual and not any(c['id'] == conta_atual['id'] for c in contas_disponiveis):
+            contas_disponiveis.append(conta_atual)
+        return build_modal_edit_aluno(aluno, turmas, contas_disponiveis)
         
     except Exception as e:
         return erro_500(e)
@@ -87,9 +93,10 @@ def criar_aluno():
         conta_id = int(dados.get('conta_id'))
         turma_id = int(dados.get('turma_id'))
         
-        # Gerar identificador automático se não fornecido
-        identificador = dados.get('identificador', f'ALU-{conta_id:03d}')
-        
+        identificador = dados.get('identificador')
+        if not identificador:
+            return erro_html('Identificador é um campo obrigatório', 200)
+
         resultado = add_aluno(
             identificador=identificador,
             turma_id=turma_id,
@@ -115,19 +122,36 @@ def atualizar_aluno(aluno_id):
         dados = get_request_data()
         conta_id = int(dados.get('conta_id')) if dados.get('conta_id') else None
         turma_id = int(dados.get('turma_id')) if dados.get('turma_id') else None
-        
+        identificador = dados.get('identificador') if dados.get('identificador') else None
+
         resultado = update_aluno(
             aluno_id=aluno_id,
             conta_id=conta_id,
-            turma_id=turma_id
+            turma_id=turma_id,
+            identificador=identificador
         )
-        
+
         if resultado['ok']:
             aluno = resultado['aluno']
-            turma = aluno.get('turma_display', '') or aluno.get('turma', '') or '-'
+            turma = aluno.get('turma_display', '') or aluno.get('turma_nome', '') or aluno.get('turma', '') or '-'
             return render_linha_aluno(aluno, turma)
-        
+
         return erro_html('Aluno não encontrado', 200)
         
+    except Exception as e:
+        return erro_500(e)
+
+@alunos_route.route('/<int:aluno_id>', methods=['DELETE'])
+def deletar_aluno(aluno_id):
+    try:
+        if obter_cargo_usuario() == Cargo.ALUNO:
+            return obter_div_acesso_negado()
+
+        resultado = delete_aluno(aluno_id)
+
+        if resultado['ok']:
+            return '', 200
+
+        return erro_html('Aluno não encontrado', 200)
     except Exception as e:
         return erro_500(e)

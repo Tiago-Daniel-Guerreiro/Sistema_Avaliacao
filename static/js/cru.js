@@ -21,6 +21,29 @@ const $cruLoadEvents = () => {
     $cruLoadFormIntercept()
     $cruLoadAllContainers()
     $cruLoadElementEvents()
+
+    // Suporte a botões com c-get (AJAX)
+    $crus('button[c-get]:not(.loaded)').forEach((btn) => {
+        btn.classList.add('loaded');
+        btn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const url = btn.getAttribute('c-get');
+            const target = btn.getAttribute('c-target');
+            if (!url || !target) return;
+            const container = document.querySelector(target);
+            if (container) {
+                container.innerHTML = `<div class="d-flex justify-content-center align-items-center"><div class="spinner-border" role="status"><span class="visually-hidden">Carregando...</span></div></div>`;
+            }
+            try {
+                const resp = await fetch(url, { method: 'GET', headers: { 'X-Cru': '1' } });
+                const html = await resp.text();
+                if (container) container.innerHTML = html;
+                $cruLoadEvents();
+            } catch (err) {
+                if (container) container.innerHTML = `<div class='text-danger'>Erro ao carregar conteúdo.</div>`;
+            }
+        });
+    });
 }
 
 const $cruLoadElementEvents = () => {

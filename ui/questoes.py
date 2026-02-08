@@ -20,7 +20,8 @@ def build_table_questoes(questoes):
         ))
         resposta_id = questao.get('resposta_id')
         botoes = TableBuilder.botoes_crud('/questoes', questao['id'])
-        if resposta_id:
+        tipo_info = questao.get('tipo_info')
+        if resposta_id and tipo_info and (tipo_info.get('list_options') or tipo_info.get('correcao_automatica')):
             botoes.append(TableBuilder.botao('Editar Respostas', f'/resposta/{resposta_id}/modal/edicao', 'btn btn-sm btn-outline-primary'))
 
         tabela.add_linha(
@@ -74,9 +75,20 @@ def build_modal_edit_questao(questao, exames, tipos):
         .set_titulo(f"Editar Questão #{questao.get('numero_questao', '')}")
         .set_form(form)
         .set_body(form.build()['campos'])
-        .add_cancel_button()
-        .add_submit_button('Atualizar')
     )
+
+    resposta_id = questao.get('resposta_id')
+    tipo_info = questao.get('tipo_info')
+    if resposta_id and tipo_info and (tipo_info.get('list_options') or tipo_info.get('correcao_automatica')):
+        modal.add_button(
+            'Editar Respostas',
+            'btn btn-outline-primary',
+            btn_type="button",
+            **{'c-get': f'/resposta/{resposta_id}/modal/edicao', 'c-target': '#modais-container'}
+        )
+
+    modal.add_cancel_button()
+    modal.add_submit_button('Atualizar')
 
     return modal.build()
 
@@ -105,7 +117,9 @@ def render_linha_questao(questao):
     ))
     resposta_id = questao.get('resposta_id')
     botoes = TableBuilder.botoes_crud('/questoes', questao['id'])
-    if resposta_id:
+    # Só mostra o botão se o tipo permitir edição de respostas
+    tipo_info = questao.get('tipo_info')
+    if resposta_id and tipo_info and (tipo_info.get('list_options') or tipo_info.get('correcao_automatica')):
         botoes.append(TableBuilder.botao('Editar Respostas', f'/resposta/{resposta_id}/modal/edicao', 'btn btn-sm btn-outline-primary'))
 
     return render_template(

@@ -1,7 +1,7 @@
 from flask import render_template
 
 def render_page_gestao():
-    return render_template('base.html', initial_page='gestao')
+    return render_template('base.html', content=render_gestao_content(), initial_page='gestao')
 
 def render_gestao_content():
     items = [

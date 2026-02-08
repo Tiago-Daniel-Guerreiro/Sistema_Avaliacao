@@ -1,3 +1,11 @@
+def get_contas_aluno_sem_turma():
+    query = '''
+        SELECT c.id, c.nome, c.email, c.id_cargo
+        FROM contas c
+        LEFT JOIN alunos a ON a.id_conta = c.id
+        WHERE c.id_cargo = 3 AND (a.id IS NULL OR a.turma_id IS NULL)
+    '''
+    return _executar_select(query)
 from .geral import _executar_select, _executar_select_um, _executar_query, _executar_query_com_id
 
 def get_alunos():
@@ -19,6 +27,8 @@ def get_aluno_by_id(aluno_id):
         SELECT 
             a.id, a.identificador, a.turma_id, a.id_conta,
             t.ano, t.identificador as turma_identificador,
+            t.identificador as turma_nome,
+            t.ano || 'º ' || t.identificador as turma_display,
             c.nome, c.email
         FROM alunos a
         LEFT JOIN turmas t ON a.turma_id = t.id
