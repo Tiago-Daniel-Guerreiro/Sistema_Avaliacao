@@ -1,0 +1,143 @@
+<style>
+    #sidebar-wrapper {
+        display: flex;
+        gap: 0;
+        height: calc(100vh - 56px); /* Menos navbar */
+    }
+    
+    #sidebar-menu-container {
+        position: relative;
+        background: #f8f9fa;
+        border-right: 1px solid #dee2e6;
+        overflow-y: auto;
+        transition: flex 0.3s ease;
+        flex: 0 0 250px;
+        z-index: 100;
+    }
+    
+    #sidebar-menu-container.collapsed {
+        flex: 0 0 40px;
+    }
+    
+    #sidebar-menu-container.collapsed .sidebar-text {
+        display: none;
+    }
+    
+    .sidebar-toggle {
+        position: sticky;
+        top: 0;
+        width: 100%;
+        padding: 10px 5px;
+        background: #fff;
+        border: none;
+        border-bottom: 1px solid #dee2e6;
+        cursor: pointer;
+        font-size: 16px;
+        color: #666;
+        text-align: center;
+        z-index: 101;
+    }
+    
+    .sidebar-toggle:hover {
+        color: #000;
+        background: #f1f3f5;
+    }
+    
+    .sidebar-menu {
+        padding: 10px 0;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+    
+    .sidebar-menu button {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        background: transparent;
+        color: #333;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 14px;
+        transition: background 0.2s;
+        text-align: left;
+        white-space: nowrap;
+    }
+    
+    .sidebar-menu button:hover {
+        background: #e9ecef;
+    }
+    
+    .sidebar-menu button.active {
+        background: #e7f5ff;
+        color: #0066cc;
+        border-left: 3px solid #0066cc;
+        padding-left: calc(10px - 3px);
+    }
+    
+    #sidebar-menu-container.collapsed .sidebar-menu button {
+        justify-content: center;
+        padding: 10px 5px;
+    }
+    
+    #sidebar-content {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        position: relative;
+        z-index: 1;
+    }
+    
+    /* Mensagem de placeholder - ocultar quando há tabela */
+    #sidebar-crud-container .text-center.py-5.text-muted {
+        display: block;
+    }
+    
+    #sidebar-crud-container table {
+        display: table;
+    }
+    
+    /* Mostra a mensagem (com placeholder) e com a tabela oculta */
+    #sidebar-crud-container .text-center.py-5.text-muted:not(:only-child) {
+        display: none;
+    }
+    
+    .sidebar-text {
+        display: inline;
+    }
+</style>
+
+<div id="sidebar-wrapper">
+    <div id="sidebar-menu-container">
+        <button class="sidebar-toggle" onclick="document.getElementById('sidebar-menu-container').classList.toggle('collapsed')" title="Expandir/Collapsar">&gt;</button>
+        <div class="sidebar-menu p-2">
+            {% for item in items %}
+            <button class="list-group-item list-group-item-action" 
+                    c-get="{{ item.url }}" 
+                    c-target="#sidebar-crud-container">
+                <span class="sidebar-text">{{ item.titulo }}</span>
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div id="sidebar-content">
+        <div id="sidebar-crud-container">
+            <div class="text-center py-5 text-muted">
+                <p>Selecione um recurso no menu lateral</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Carregar primeiro recurso por padrão
+    setTimeout(() => {
+        const firstBtn = document.querySelector('.sidebar-menu button');
+        if (firstBtn) {
+            firstBtn.click();
+        }
+    }, 200);
+</script>

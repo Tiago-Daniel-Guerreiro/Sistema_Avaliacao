@@ -1,0 +1,51 @@
+<div class="mb-3">
+    <label for="{{ name }}" class="form-label">{{ label }}</label>
+    <div id="{{ name }}-container" class="border rounded p-3 bg-light" data-input-type="{{ input_type }}" data-list-mode="{{ mode }}">
+        <table class="w-100" style="border-collapse: separate; border-spacing: 0.5rem 0.25rem;">
+            <tbody>
+                {% set items = initial_value if initial_value is defined and initial_value else [''] %}
+                {% for item in items %}
+                    <tr class="input-list-item">
+                        <td style="width: 100%;">
+                            {% set value = item %}
+                            {% set compact = true %}
+                            {% set template_name = 'componentes/input/' ~ (input_type or 'text') ~ '.html' %}
+                            {% include template_name ignore missing %}
+                        </td>
+                        {% if mode in ['single', 'multiple'] %}
+                        <td style="width: 120px; padding-left: 0.5rem;">
+                            <label style="display: flex; align-items: center; height: 38px; margin: 0;">
+                                {% if mode == 'single' %}
+                                    <input type="radio" class="correct-radio" name="{{ name }}_correct" value="{{ item }}"
+                                        {% if item == opcao_correta %}checked{% endif %} style="margin-right: 0.5rem;">
+                                {% else %}
+                                    <input type="checkbox" class="correct-check" value="{{ item }}"
+                                        {% if item in opcoes_corretas %}checked{% endif %} style="margin-right: 0.5rem;">
+                                {% endif %}
+                                <span style="font-size: 0.85rem;">Correta</span>
+                            </label>
+                        </td>
+                        {% endif %}
+                        <td style="width: 50px; padding-left: 0.5rem;">
+                            {% if loop.last %}
+                                <button type="button" class="btn btn-outline-success btn-sm" style="width: 40px; height: 38px; padding: 0.25rem 0.4rem;" onclick="addListItem(this)">+</button>
+                            {% else %}
+                                <button type="button" class="btn btn-outline-danger btn-sm" style="width: 40px; height: 38px; padding: 0.25rem 0.4rem;" onclick="removeListItem(this)">-</button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <input type="hidden" id="{{ name }}" name="{{ name }}" value="{% if initial_value is defined and initial_value %}{{ initial_value | tojson }}{% else %}[]{% endif %}">
+    {% if mode == 'single' %}
+        <input type="hidden" id="{{ name }}_correct_value" name="{{ name }}_correct" value="{{ opcao_correta or '' }}">
+        <small class="text-muted">Adicione opções e selecione a correta.</small>
+    {% elif mode == 'multiple' %}
+        <input type="hidden" id="{{ name }}_correct_values" name="{{ name }}_correct" value="{% if opcoes_corretas is defined and opcoes_corretas %}{{ opcoes_corretas | tojson }}{% else %}[]{% endif %}">
+        <small class="text-muted">Adicione opções e selecione as corretas.</small>
+    {% else %}
+        <small class="text-muted">Adicione os valores clicando no botão +</small>
+    {% endif %}
+</div>

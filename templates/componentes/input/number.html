@@ -1,0 +1,10 @@
+{% if compact %}
+    <input type="number" class="form-control" data-input-value
+           value="{{ value or '' }}" {% if required %}required{% endif %} {% if disabled %}disabled{% endif %}>
+{% else %}
+    <div class="mb-3">
+        {% if label %}<label for="{{ name }}" class="form-label">{{ label }}</label>{% endif %}
+        <input type="number" class="form-control" id="{{ name }}" name="{{ name }}" 
+               value="{{ value or '' }}" {% if required %}required{% endif %} {% if disabled %}disabled{% endif %}>
+    </div>
+{% endif %}

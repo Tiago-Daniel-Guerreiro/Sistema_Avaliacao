@@ -1,0 +1,16 @@
+{% if compact %}
+    <input type="email" class="form-control" data-input-value
+           {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+           {% if value %}value="{{ value }}"{% endif %}
+           {% if required %}required{% endif %}
+           {% if disabled %}disabled{% endif %}>
+{% else %}
+    <div class="mb-3">
+        <label for="{{ name }}" class="form-label">{{ label }}</label>
+        <input type="email" class="form-control" id="{{ name }}" name="{{ name }}"
+               {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+               {% if value %}value="{{ value }}"{% endif %}
+               {% if required %}required{% endif %}
+               {% if disabled %}disabled{% endif %}>
+    </div>
+{% endif %}

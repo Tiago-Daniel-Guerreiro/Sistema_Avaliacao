@@ -1,0 +1,41 @@
+<div class="tabela-container">
+    {% if (titulo) %}
+    <h3 class="tabela-titulo">{{ titulo }}</h3>
+    {% endif %}
+    {% if(botao_fora_tabela) %} 
+    <div class="tabela-botao-fora-tabela">
+        {{ botao_fora_tabela }}
+    </div>
+    {% endif %}
+    <table class="table"{% if table_id %} id="{{ table_id }}"{% endif %}>
+        {% if header %}
+        <thead class="tabela-header">
+            <tr>
+                {% for coluna in header.colunas %}
+                <th>{{ coluna.titulo }}</th>
+                {% endfor %}
+                {% if (header.acoes) %}
+                <th style="width: 1%; white-space: nowrap;">Ações</th>
+                {% endif %}
+            </tr>
+        </thead>
+        {% endif %}
+        <tbody>
+            {% if linhas %}
+                {% for linha in linhas %}
+                    {% if linha.raw %}
+                        {{ linha.html | safe }}
+                    {% else %}
+                        {% include 'componentes/tabela_linha.html' %}
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <tr class="tabela-empty">
+                    <td colspan="{{ (header.colunas|length if header else 0) + (1 if header and header.acoes else 0) }}">
+                        Nenhum registro encontrado.
+                    </td>
+                </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,8 @@
+<div class="mb-3">
+    <label class="form-label">{{ label }}</label>
+    <select class="form-select" name="{{ name }}" {% if required %}required{% endif %} {% if disabled %}disabled{% endif %}>
+        <option value="">Selecione...</option>
+        <option value="true" {% if value == 'true' or value == True %}selected{% endif %}>Verdadeiro</option>
+        <option value="false" {% if value == 'false' or value == False %}selected{% endif %}>Falso</option>
+    </select>
+</div>

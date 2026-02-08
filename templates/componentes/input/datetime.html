@@ -1,0 +1,14 @@
+{% if compact %}
+    <input type="datetime-local" class="form-control" data-input-value
+           {% if value %}value="{{ value }}"{% endif %}
+           {% if required %}required{% endif %}
+           {% if disabled %}disabled{% endif %}>
+{% else %}
+    <div class="mb-3">
+        <label for="{{ name }}" class="form-label">{{ label }}</label>
+        <input type="datetime-local" class="form-control" id="{{ name }}" name="{{ name }}"
+               {% if value %}value="{{ value }}"{% endif %}
+               {% if required %}required{% endif %}
+               {% if disabled %}disabled{% endif %}>
+    </div>
+{% endif %}

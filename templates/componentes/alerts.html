@@ -1,0 +1,3 @@
+{% for alert in alerts %}
+<div id="{{ alert.id }}" class="alert alert-{{ alert.type }}{% if alert.hidden %} d-none{% endif %}" role="alert" style="cursor: pointer;" onclick="this.remove()" c-self-remove="1">{{ alert.text | default('') | safe }}</div>
+{% endfor %}

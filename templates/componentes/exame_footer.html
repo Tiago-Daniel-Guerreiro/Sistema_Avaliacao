@@ -1,0 +1,13 @@
+<div class="container-fluid mt-4 text-center">
+    {% if is_form %}
+    <form action="{{ action }}" method="POST">
+        <button type="submit" class="btn {{ button_class }}">
+            {{ button_label }}
+        </button>
+    </form>
+    {% else %}
+    <a href="{{ action }}" class="btn {{ button_class }}">
+        {{ button_label }}
+    </a>
+    {% endif %}
+</div>

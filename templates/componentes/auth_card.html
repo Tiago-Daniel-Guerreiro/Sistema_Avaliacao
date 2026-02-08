@@ -1,0 +1,25 @@
+<div class="container min-vh-100 d-flex align-items-center justify-content-center py-4">
+    <div class="row w-100">
+        <div class="col-12 col-sm-8 col-md-6 col-lg-4 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h2 class="h5 text-center mb-4">{{ title }}</h2>
+                    <h3 class="h6 text-center mb-3">{{ subtitle }}</h3>
+                    {{ alerts_html | safe }}
+                    {{ form_open | safe }}
+                        {{ form_campos | safe }}
+                        <button type="submit" class="btn btn-primary w-100">{{ submit_label }}</button>
+                    {{ form_close | safe }}
+                    {{ footer_html | safe }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% if script %}
+<script>
+window.addEventListener('load', function () {
+{{ script | safe }}
+});
+</script>
+{% endif %}

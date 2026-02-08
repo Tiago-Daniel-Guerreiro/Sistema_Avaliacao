@@ -1,0 +1,204 @@
+.card-hover {
+    transition: transform 0.2s;
+}
+
+.card-hover:hover {
+    transform: translateY(-5px);
+}
+
+body {
+    overflow-x: hidden;
+}
+
+.table {
+    width: 100%;
+    table-layout: auto;
+}
+
+.table td,
+.table th {
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
+}
+
+.table td {
+    white-space: normal;
+}
+
+.table td[data-full-text] {
+    position: relative;
+    cursor: help;
+}
+
+.table thead th:last-child,
+td:last-child {
+    white-space: nowrap !important;
+    width: 1% !important;
+    min-width: max-content !important;
+}
+
+.btn-group-actions,
+td:last-child .btn,
+td:last-child button {
+    white-space: nowrap !important;
+    display: inline-block !important;
+    flex-shrink: 0 !important;
+}
+
+td:last-child {
+    min-width: max-content !important;
+    display: table-cell !important;
+}
+
+.btn {
+    white-space: nowrap;
+}
+
+#modais-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1050;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+#modais-container.active {
+    display: flex !important;
+}
+
+#modais-container #modal-wrapper {
+    position: relative;
+    width: 90%;
+    max-width: 800px;
+    max-height: 90vh;
+    margin: 0;
+    background: white;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    display: flex;
+    flex-direction: column;
+    z-index: 1051;
+    overflow: hidden;
+}
+
+#modais-container .modal {
+    position: static;
+    margin: 0;
+    display: block;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    width: 100%;
+    height: 100%;
+}
+
+#modais-container .modal-dialog {
+    margin: 0;
+    max-width: none;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#modais-container .modal-content {
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: none;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    max-height: 100%;
+}
+
+#modais-container .modal-body {
+    flex: 1;
+    padding: 1.5rem;
+    overflow-y: auto;
+    min-height: 200px;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+}
+
+#modais-container .modal-body form {
+    width: 100% !important;
+    max-width: 100% !important;
+    display: block !important;
+    margin: 0 !important;
+}
+
+#modais-container .modal-body>* {
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+#modais-container .modal-body .mb-3 {
+    width: 100% !important;
+    box-sizing: border-box !important;
+    margin-bottom: 1rem !important;
+}
+
+#modais-container .form-label {
+    display: block !important;
+    width: 100% !important;
+    margin-bottom: 0.5rem !important;
+}
+
+#modais-container .form-select,
+#modais-container .form-control,
+#modais-container input:not([type="checkbox"]):not([type="radio"]),
+#modais-container select,
+#modais-container textarea {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+}
+
+#modais-container .form-select:focus,
+#modais-container .form-control:focus,
+#modais-container input:not([type="checkbox"]):not([type="radio"]):focus,
+#modais-container select:focus,
+#modais-container textarea:focus {
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+#modais-container .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #dee2e6;
+    flex-shrink: 0;
+}
+
+#modais-container .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #dee2e6;
+    flex-shrink: 0;
+}
+
+#modais-container .btn-close {
+    padding: 0.5rem;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+}

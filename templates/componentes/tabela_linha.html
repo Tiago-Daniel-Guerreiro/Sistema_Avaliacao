@@ -1,0 +1,12 @@
+<tr {% if linha.id %}id="{{ linha.id }}"{% endif %}>
+    {% for coluna in linha.colunas %}
+    <td>{{ coluna | safe }}</td>
+    {% endfor %}
+    {% if header and header.acoes %}
+    <td style="white-space: nowrap;">
+        {% for botao in linha.botoes %}
+            {{ botao | safe }}
+        {% endfor %}
+    </td>
+    {% endif %}
+</tr>

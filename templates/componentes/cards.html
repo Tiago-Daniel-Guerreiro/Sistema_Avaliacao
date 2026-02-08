@@ -1,0 +1,16 @@
+<div class="container py-5">
+    {% if titulo %}<h1 class="text-center mb-5">{{ titulo }}</h1>{% endif %}
+    
+    <div class="row g-4">
+        {% for item in items %}
+        <div class="col-md-4">
+            <a href="{{ item.href }}" class="card h-100 shadow-sm card-hover text-decoration-none text-reset">
+                <div class="card-body text-center p-5">
+                    <h3 class="card-title mb-3">{{ item.titulo }}</h3>
+                    <p class="text-muted">{{ item.descricao }}</p>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>

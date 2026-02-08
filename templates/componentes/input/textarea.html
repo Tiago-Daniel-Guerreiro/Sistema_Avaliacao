@@ -1,0 +1,14 @@
+{% if compact %}
+    <textarea class="form-control" rows="{{ rows or 3 }}" data-input-value
+              {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+              {% if required %}required{% endif %}
+              {% if disabled %}disabled{% endif %}>{{ value or '' }}</textarea>
+{% else %}
+    <div class="mb-3">
+        <label for="{{ name }}" class="form-label">{{ label }}</label>
+        <textarea class="form-control" id="{{ name }}" name="{{ name }}" rows="{{ rows or 3 }}"
+                  {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+                  {% if required %}required{% endif %}
+                  {% if disabled %}disabled{% endif %}>{{ value or '' }}</textarea>
+    </div>
+{% endif %}

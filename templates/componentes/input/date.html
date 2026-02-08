@@ -1,0 +1,20 @@
+{% if compact %}
+    <input type="date" class="form-control" data-input-value
+           {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+           {% if value %}value="{{ value }}"{% endif %}
+           {% if required %}required{% endif %}
+           {% if readonly %}readonly{% endif %}
+           {% if disabled %}disabled{% endif %}
+           {% if style %}style="{{ style }}"{% endif %}>
+{% else %}
+    <div class="mb-3">
+        <label for="{{ name }}" class="form-label">{{ label }}</label>
+        <input type="date" class="form-control" id="{{ name }}" name="{{ name }}"
+               {% if placeholder %}placeholder="{{ placeholder }}"{% endif %}
+               {% if value %}value="{{ value }}"{% endif %}
+               {% if required %}required{% endif %}
+               {% if readonly %}readonly{% endif %}
+               {% if disabled %}disabled{% endif %}
+               {% if style %}style="{{ style }}"{% endif %}>
+    </div>
+{% endif %}

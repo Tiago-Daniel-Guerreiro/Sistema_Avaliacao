@@ -1,0 +1,51 @@
+<script>
+(() => {
+    let sessionActive = false;
+
+    const startSession = async () => {
+        sessionActive = true;
+        try {
+            if (!document.fullscreenElement) {
+                await document.documentElement.requestFullscreen();
+            }
+        } catch (err) {
+            // Se o navegador bloquear fullscreen, ainda manter a sessão ativa
+        }
+    };
+
+    const triggerViolation = () => {
+        if (!sessionActive) return;
+        window.location.reload();
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+        startSession();
+    });
+
+    document.addEventListener('fullscreenchange', () => {
+        if (!document.fullscreenElement && sessionActive) {
+            triggerViolation();
+        }
+    });
+
+    window.addEventListener('blur', () => triggerViolation());
+    document.addEventListener('visibilitychange', () => {
+        if (document.hidden) triggerViolation();
+    });
+
+    document.addEventListener('contextmenu', (e) => e.preventDefault());
+    document.addEventListener('copy', (e) => e.preventDefault());
+    document.addEventListener('paste', (e) => e.preventDefault());
+    document.addEventListener('cut', (e) => e.preventDefault());
+
+    document.addEventListener('keydown', (e) => {
+        if (
+            e.key === 'F12' ||
+            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J')) ||
+            (e.ctrlKey && e.key === 'U')
+        ) {
+            e.preventDefault();
+        }
+    });
+})();
+</script>

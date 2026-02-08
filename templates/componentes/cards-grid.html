@@ -1,0 +1,56 @@
+<div class="container py-4">
+<div id="cards-container" class="row g-4">
+    {% if items %}
+        {% for item in items %}
+        <div class="col-lg-4 col-md-6">
+            {% if item.link %}
+                <a href="{{ item.link }}" class="card-grid-item">
+            {% else %}
+                <div class="card-grid-item">
+            {% endif %}
+            
+            <div class="card h-100">
+                <div class="card-body">
+                    {% if item.turma_display %}
+                        <h5 class="card-title">{{ item.turma_display }}</h5>
+                    {% elif item.disciplina_nome %}
+                        <h5 class="card-title">{{ item.disciplina_nome }}</h5>
+                        {% if item.professor_nome %}
+                            <p class="card-subtitle">Prof. {{ item.professor_nome }}</p>
+                        {% endif %}
+                    {% elif item.disciplina_display %}
+                        <h5 class="card-title">{{ item.disciplina_display }}</h5>
+                    {% elif item.title %}
+                        <h5 class="card-title">{{ item.title }}</h5>
+                    {% elif item_name and item[item_name] %}
+                        <h5 class="card-title">{{ item[item_name] }}</h5>
+                    {% else %}
+                        <h5 class="card-title">Item</h5>
+                    {% endif %}
+                    
+                    {% if item.description %}
+                        <p class="card-description">{{ item.description }}</p>
+                    {% endif %}
+                    
+                    {% if item.button %}
+                        {{ item.button }}
+                    {% endif %}
+                </div>
+            </div>
+            
+            {% if item.link %}
+                </a>
+            {% else %}
+                </div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    {% elif loading %}
+        {% include 'componentes/loading.html' %}
+    {% else %}
+        <div class="col-12">
+            <p class="text-muted text-center py-5">{{ empty_text or 'Nenhum item disponível' }}</p>
+        </div>
+    {% endif %}
+</div>
+</div>

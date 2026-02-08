@@ -1,0 +1,8 @@
+<div class="text-center mt-3">
+    {% for link in links %}
+    <a href="{{ link.url if link.url else '#' }}"{% if link.onclick %} onclick="{{ link.onclick }}; return false;"{% endif %} class="link-primary small text-decoration-none">{{ link.label }}</a>
+    {% if not loop.last %}
+    <span class="mx-2">|</span>
+    {% endif %}
+    {% endfor %}
+</div>

@@ -1,0 +1,15 @@
+<div class="mb-3">
+    <label for="{{ name }}" class="form-label">{{ label }}</label>
+    <div class="row g-2">
+        <div class="col-md-6">
+            <select class="form-select" id="{{ name }}_select" name="{{ name }}" {% if disabled %}disabled{% endif %}>
+                <option value="">Selecione...</option>
+                <option value="Verdadeiro" {% if value == 'Verdadeiro' %}selected{% endif %}>Verdadeiro</option>
+                <option value="Falso" {% if value == 'Falso' %}selected{% endif %}>Falso</option>
+            </select>
+        </div>
+        <div class="col-md-6">
+            <input type="text" class="form-control" id="{{ name }}_justificacao" name="justificacao" placeholder="Justifique..." value="{% if value and value not in ['Verdadeiro', 'Falso'] %}{{ value }}{% endif %}" {% if disabled %}disabled{% endif %}>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,26 @@
+{% if compact %}
+    <select class="form-select" data-input-value {% if required %}required{% endif %} {% if disabled %}disabled{% endif %}>
+        <option value="">Selecione...</option>
+        {% if options %}
+            {% for option in options %}
+            <option value="{{ option.value }}" {% if option.value == value %}selected{% endif %} title="{{ option.label }}">{{ option.label }}</option>
+            {% endfor %}
+        {% else %}
+            <option value="" disabled>Sem opções disponíveis</option>
+        {% endif %}
+    </select>
+{% else %}
+    <div class="mb-3">
+        <label for="{{ name }}" class="form-label">{{ label }}</label>
+        <select class="form-select" id="{{ name }}" name="{{ name }}" {% if required %}required{% endif %} {% if disabled %}disabled{% endif %}>
+            <option value="">Selecione...</option>
+            {% if options %}
+                {% for option in options %}
+                <option value="{{ option.value }}" {% if option.value == value %}selected{% endif %} title="{{ option.label }}">{{ option.label }}</option>
+                {% endfor %}
+            {% else %}
+                <option value="" disabled>Sem opções disponíveis</option>
+            {% endif %}
+        </select>
+    </div>
+{% endif %}
